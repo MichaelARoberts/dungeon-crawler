@@ -15,7 +15,6 @@ export default function DungeonTile(props: DungeonTileProps) {
       width: props.size,
       height: props.size,
       gridArea: `${props.y + 1} / ${props.x + 1}`,
-      // backgroundImage: 'url("https://images.unsplash.com/photo-1637325258040-d2f09636ecf6?auto=format&fit=crop&q=80&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&w=1335")',
       backgroundSize: 'cover',
       backgroundColor: props.color,
     }
