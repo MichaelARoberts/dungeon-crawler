@@ -4,7 +4,7 @@ import './DungeonGrid.scss';
 import chroma from "chroma-js";
 
 const DungeonGrid  : React.FC = () => {
-  const startTile = {x: 0, y: 0};
+  
   const rows : number = 16;
   const columns : number = 16;
   const maxTiles = 23;
@@ -15,6 +15,7 @@ const DungeonGrid  : React.FC = () => {
 
   useEffect(() => {
     const tiles : {x: number, y:number}[] = []
+    const startTile = {x: 0, y: 0};
     const determinePossibleTilePlacement = (x: number, y: number) => {
       const directions = {
         right: [x + 1, y], // Right
