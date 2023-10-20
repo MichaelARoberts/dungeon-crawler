@@ -1,13 +1,10 @@
 $columns: 16;
 $rows: 16;
-$cell-size: 100px;
 
 .dungeon-grid {
   // create a 16 by 16 grid
   display: grid;
-  grid-template-columns: repeat($columns, $cell-size);
-  grid-template-rows: repeat($rows, $cell-size);
-  grid-gap: 1px;
+  grid-gap: 10px;
 
   .dungeon-background-tile {
       border: 1px solid #fff;

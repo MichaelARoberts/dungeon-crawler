@@ -3,6 +3,7 @@ import {useMemo} from 'react';
 type DungeonTileProps = {
   x: number;
   y: number;
+  direction: string;
   size: number;
   children?: React.ReactNode;
   color: string;
@@ -10,7 +11,6 @@ type DungeonTileProps = {
 
 export default function DungeonTile(props: DungeonTileProps) {
   const tileStyle = useMemo( () => {
-    console.log(props);
     return {
       width: props.size,
       height: props.size,
