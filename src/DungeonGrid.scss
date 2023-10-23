@@ -1,15 +1,8 @@
-$columns: 16;
-$rows: 16;
-
 .dungeon-grid {
-  // create a 16 by 16 grid
   display: grid;
-  grid-gap: 10px;
-
-  .dungeon-background-tile {
-      border: 1px solid #fff;
-      background-color: grey;
-      width: 100px;
-      height: 100px;
-    }
+  .dungeon-tile {
+    border-color: black;
+    border-style: solid;
+    box-sizing: border-box;
+  }
 }

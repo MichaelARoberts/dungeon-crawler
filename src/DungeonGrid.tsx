@@ -1,29 +1,22 @@
-import {useState, useMemo, useEffect} from 'react';
-import DungeonTile from "./DungeonTile";
+import {useState, useEffect, useMemo} from 'react';
+import DungeonTile, {Tile} from "./DungeonTile";
 import './DungeonGrid.scss';
 import chroma from "chroma-js";
+// import {orderBy} from "lodash";
+
 
 const DungeonGrid  : React.FC = () => {
   
-  type Tile = {
-    x: number;
-    y: number;
-    direction: string;
-  }  | undefined;
-
-
   const rows : number = 16;
   const columns : number = 16;
   const maxTiles = 23;
-  const size = 200;
+  const size = 100;
   const [generatedTiles, setGeneratedTiles] = useState<Tile[]>();
 
-  const colorScale = chroma.scale(['#fafa6e','#2A4858'])
-    .mode('lch').colors(maxTiles)
+  
 
   useEffect(() => {
-    const tiles : Tile[] = []
-    const startTile = {x: 0, y: 0, direction: ''};
+    const tiles : Tile[] = [];
     const determinePossibleTilePlacement = (x: number, y: number) => {
       const directions = {
         right: [x + 1, y], // Right
@@ -60,36 +53,100 @@ const DungeonGrid  : React.FC = () => {
       
       const randomDirectionCoordinates = determinedDirections[randomDirection];
 
-      if(randomDirectionCoordinates === undefined){
-        return undefined;
-      }
-      return {x: randomDirectionCoordinates[0], y: randomDirectionCoordinates[1], direction: randomDirection};
+
+      return {x: randomDirectionCoordinates?.[0] || 0, y: randomDirectionCoordinates?.[1] || 0, direction: randomDirection};
     }
 
     const generateTiles = () => {
-      let currentTile : Tile = startTile;
-      let i = 0;
-      while (i < maxTiles){
-        tiles.push(currentTile);
-        currentTile = determinePossibleTilePlacement(currentTile?.x || 0, currentTile?.y || 0);
+      const colorScale = chroma.scale(['#fafa6e','#2A4858'])
+    .mode('lch').colors(maxTiles)
+
+      let currentTile : Tile = {
+        x: 0,
+        y: 0,
+      }
+
+      // make the above a for loop
+      for (let i = 0; i < maxTiles; i++){
+        if(i !== 0){
+          tiles.push(currentTile);
+        } 
+        
+        currentTile = {
+          ...currentTile,
+          ...determinePossibleTilePlacement(currentTile.x, currentTile.y)
+        }
+        currentTile.index = i;
+        currentTile.color = colorScale[i];
+        currentTile.size = size;
+        currentTile.borderStyle = {
+          borderTop: 5,
+          borderRight: 5,
+          borderBottom: 5,
+          borderLeft: 5,
+        };
 
         if(currentTile === undefined){
           break;
         }
-        i++;
       }
+
       return tiles;
     }
 
     const _tiles = generateTiles();
-    setGeneratedTiles(_tiles);
+
+    const styledTiles = _tiles?.map((tile, index) => {
+      const nextTile = _tiles.find((tile) => tile.index === index + 1);
+      tile.borderStyle = borderStyle(nextTile, tile);
+      return tile;
+    });
+
+    setGeneratedTiles(styledTiles);
   }, [])
 
-  const dungeonTiles = useMemo(() => {
-    return (generatedTiles || []).map((tile, index) => {
-      return <DungeonTile x={tile?.x  || 0} y={tile?.y  || 0} direction={tile?.direction || ''} size={size} color={colorScale[index]} key={index}> {index} {tile?.direction}  </DungeonTile>
-    })
-  }, [generatedTiles, colorScale])
+  const borderStyle = (nextTile: Tile | undefined, tile: Tile) => {
+    const styles = {
+      borderTop: 5,
+      borderRight: 5,
+      borderBottom: 5,
+      borderLeft: 5,
+    };
+    
+    if(tile.direction === 'up' || nextTile?.direction === 'down') {
+      styles.borderBottom = 0;
+    }
+
+    if(tile.direction === 'down' || nextTile?.direction === 'up') {
+      styles.borderTop = 0;
+    }
+
+    if(tile.direction === 'left' || nextTile?.direction === 'right') {
+      styles.borderRight = 0;
+    }
+
+    if(tile.direction === 'right' || nextTile?.direction === 'left') {
+      styles.borderLeft = 0;
+    }
+    return styles;
+  }
+
+  const tileElements = useMemo(() => {
+    return generatedTiles?.map((tile) => {
+                return (
+                <DungeonTile tile={tile} key={tile.index}>
+                  <div className="flex justify-center items-center">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold">{tile.index}</div>
+                      <div className="text-sm">{tile.direction}</div>
+                      <div className="text-sm">{tile.x} {tile.y}</div>
+                    </div>
+                  </div>
+                </DungeonTile>
+                );
+              })
+  }, [generatedTiles])
+
 
   return (
     <div className="dungeon-grid" style={{
@@ -98,7 +155,9 @@ const DungeonGrid  : React.FC = () => {
     }}>
         <div className="dungeon-background">
           <div className="dungeon-grid">
-            {dungeonTiles}
+            {
+              tileElements
+            }
           </div>
         </div>
     </div>
